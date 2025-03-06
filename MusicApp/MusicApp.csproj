@@ -60,6 +60,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="Pages\Playlists\**" />
+	  <AndroidResource Remove="Pages\Search\**" />
+	  <Compile Remove="Pages\Playlists\**" />
+	  <Compile Remove="Pages\Search\**" />
+	  <EmbeddedResource Remove="Pages\Playlists\**" />
+	  <EmbeddedResource Remove="Pages\Search\**" />
+	  <MauiCss Remove="Pages\Playlists\**" />
+	  <MauiCss Remove="Pages\Search\**" />
+	  <MauiXaml Remove="Pages\Playlists\**" />
+	  <MauiXaml Remove="Pages\Search\**" />
+	  <None Remove="Pages\Playlists\**" />
+	  <None Remove="Pages\Search\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AathifMahir.Maui.MauiIcons.Core" Version="4.0.0" />
 		<PackageReference Include="AathifMahir.Maui.MauiIcons.Fluent" Version="4.0.0" />
 		<PackageReference Include="AathifMahir.Maui.MauiIcons.Material" Version="4.0.0" />
@@ -68,7 +83,8 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.40" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.2" />
 		<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.40" />
-		<PackageReference Include="Xamarin.Essentials" Version="1.8.1" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -76,6 +92,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Artists\ArtistsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\Folders\FolderFilespage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Folders\FoldersPage.xaml">
@@ -87,8 +106,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Pages\Search\" />
-	  <Folder Include="Pages\Playlists\" />
+	  <Folder Include="Pages\Albuns\" />
 	</ItemGroup>
 
 </Project>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MusicApp.Pages.Folders.FolderFilespage"
+             Title="FolderFilespage">
+    <Grid RowDefinitions="Auto,*" Padding="10">
+        <Label Text="{Binding Files.Count, StringFormat='{0} files found'}"
+               FontSize="16"
+               Margin="10" />
+
+        <CollectionView Grid.Row="1"                         
+                        SelectionMode="None"
+                        ItemsSource="{Binding Files}"                         
+                        x:Name="FilesColection">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="5" Padding="10" BorderColor="LightGray">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <StackLayout Spacing="5">
+                                <Label Text="{Binding Name}" 
+                                       FontAttributes="Bold" />
+                                <Label Text="{Binding Path}" 
+                                       FontSize="Small"
+                                       LineBreakMode="MiddleTruncation" />
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Label Text="{Binding FormattedSize}" 
+                                           FontSize="Small" 
+                                           TextColor="Gray" />
+                                    <Label Grid.Column="2" 
+                                           Text="{Binding LastModified, StringFormat='{0:g}'}" 
+                                           FontSize="Small" 
+                                           TextColor="Gray" />
+                                </Grid>
+                            </StackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="No files found in this folder"
+                           FontSize="18"
+                           TextColor="Gray"
+                           HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <ActivityIndicator Grid.Row="1"
+                           x:Name="loadingIndicator"
+                           IsRunning="False"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

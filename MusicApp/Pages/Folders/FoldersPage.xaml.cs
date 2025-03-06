@@ -6,42 +6,39 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using MusicApp.Classes;
 using System.Threading.Tasks;
+using MusicApp.Services;
+using MusicApp.Models;
+using CommunityToolkit.Maui.Alerts;
 
 namespace MusicApp.Pages.Folders;
 
-[QueryProperty(nameof(ParamName), "ParamName")]
 public partial class FoldersPage : ContentPage
 {
-    private string _paramName;
 
-    public string ParamName
-
-    {
-        get => _paramName;
-
-        set
-
-        {
-            _paramName = value;
-
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsBackEnabled { get; set; } = true;
-
-    public bool IsBackVisible { get; set; } = true;
-
+    private readonly DatabaseService _databaseService;
     private readonly IFolderPicker _folderPicker;
+    private List<FolderInfo> _folders;
 
-    public ICommand UnifiedBackCommand { get; private set; }
-
-    public FoldersPage(IFolderPicker folderPicker)
+    public FoldersPage(DatabaseService databaseService, IFolderPicker folderPicker)
     {
         InitializeComponent();
-        UnifiedBackCommand = new Command(HandleBackCommand);
-        BindingContext = this; // Set the binding context to this page
+        _databaseService = databaseService;
         _folderPicker = folderPicker;
+
+        // Load folders when page appears
+        this.Appearing += OnPageAppearing;
+
+    }
+
+    private async void OnPageAppearing(object sender, EventArgs e)
+    {
+        await LoadFoldersAsync();
+    }
+
+    private async Task LoadFoldersAsync()
+    {
+        _folders = await _databaseService.GetFoldersAsync();
+        foldersListView.ItemsSource = _folders;
     }
 
     private async void HandleBackCommand()
@@ -63,24 +60,66 @@ public partial class FoldersPage : ContentPage
         return true; // Prevents default back behavior
     }
 
-    private async void SelectFolderButton_Clicked_1(object sender, EventArgs e)
+    private async void OnDeleteFolderClicked(object sender, EventArgs e)
+    {
+        if (sender is Button button && button.BindingContext is FolderInfo folder)
+        {
+            bool confirm = await DisplayAlert("Confirm", $"Delete folder '{folder.Name}'?", "Yes", "No");
+
+            if (confirm)
+            {
+                await _databaseService.DeleteFolderAsync(folder);
+                await LoadFoldersAsync();
+            }
+        }
+    }
+
+    private async void OnSelectFolderClicked(object sender, EventArgs e)
     {
         try
         {
-            var folder = await FileSystemHelper.PickFolderAsync();
+            var result = await _folderPicker.PickAsync(CancellationToken.None);
 
-            if (folder == null)
+            if (result.IsSuccessful)
             {
-                throw new Exception("Folder Could not be selected!.");
+                var folderInfo = new FolderInfo
+                {
+                    Name = result.Folder.Name,
+                    Path = result.Folder.Path,
+                    DateAdded = DateTime.Now
+                };
+
+                await _databaseService.SaveFolderAsync(folderInfo);
+                await LoadFoldersAsync();
+
+                if (DeviceInfo.Platform == DevicePlatform.WinUI)
+                {
+                    await DisplayAlert("Success", $"Folder saved: {folderInfo.Name}", "OK");
+                }
+                else
+                {
+                    await Toast.Make($"Folder saved: {folderInfo.Name}", CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
+                }
             }
-
-            var files = FileSystemHelper.GetFilesInDirectory(folder);
-
-            FilesListView.ItemsSource = files;
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", ex.Message, "OK");
+            await DisplayAlert("Error", $"Failed to select folder: {ex.Message}", "OK");
         }
     }
+
+    private async void OnFolderTapped(object sender, ItemTappedEventArgs e)
+    {
+        if (e.Item is FolderInfo folder)
+        {
+            // Deselect the item
+            ((ListView)sender).SelectedItem = null;
+
+            // Navigate to the files page with the folder path
+            await Shell.Current.GoToAsync($"{nameof(FolderFilespage)}?folderPath={Uri.EscapeDataString(folder.Path)}");
+
+        }
+    }
+
+    
 }

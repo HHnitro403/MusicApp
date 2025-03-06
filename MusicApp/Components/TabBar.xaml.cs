@@ -43,6 +43,6 @@ public partial class TabBar : ContentView
     {
         { "FolderPicker", folderPicker }
     };
-        await Shell.Current.GoToAsync($"{nameof(FoldersPage)}?ParamName={navigationParameters}");
+        await Shell.Current.GoToAsync(nameof(FoldersPage));
     }
 }

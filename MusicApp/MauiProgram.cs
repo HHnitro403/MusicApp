@@ -5,6 +5,8 @@ using MauiIcons.Material;
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Storage;
 using MusicApp.Classes;
+using MusicApp.Services;
+using MusicApp.Pages.Folders;
 
 namespace MusicApp;
 
@@ -42,6 +44,8 @@ public static class MauiProgram
                                  // Register the FolderPicker as a singleton
         builder.Services.AddSingleton<IFolderPicker>(FolderPicker.Default);
         builder.Services.AddSingleton<IPermissionService, PermissionService>();
+        builder.Services.AddSingleton<DatabaseService>();
+        builder.Services.AddTransient<FolderFilespage>();
 
 #pragma warning restore CA1416 // Validar a compatibilidade da plataforma
 
